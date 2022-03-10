@@ -1,6 +1,6 @@
 # 一个模仿Elastic中文社区的项目
 
-#资料
+##资料
 
 [Elastic社区](https://elasticsearch.cn/)
 

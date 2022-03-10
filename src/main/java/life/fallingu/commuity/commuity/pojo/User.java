@@ -1,7 +1,9 @@
 package life.fallingu.commuity.commuity.pojo;
 
-import java.io.Serializable;
+import lombok.Data;
 
+import java.io.Serializable;
+@Data
 public class User implements Serializable {
     private Integer id;
     private String accountId;
@@ -9,64 +11,5 @@ public class User implements Serializable {
     private String token;
     private Long gmtCreate;
     private Long gmtModified;
-
-    public User() {
-    }
-
-    public User(Integer id, String accountId, String name, String token, Long gmtCreate, Long gmtModified) {
-        this.id = id;
-        this.accountId = accountId;
-        this.name = name;
-        this.token = token;
-        this.gmtCreate = gmtCreate;
-        this.gmtModified = gmtModified;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public Long getGmtCreate() {
-        return gmtCreate;
-    }
-
-    public void setGmtCreate(Long gmtCreate) {
-        this.gmtCreate = gmtCreate;
-    }
-
-    public Long getGmtModified() {
-        return gmtModified;
-    }
-
-    public void setGmtModified(Long gmtModified) {
-        this.gmtModified = gmtModified;
-    }
+    private String avatarUrl;
 }

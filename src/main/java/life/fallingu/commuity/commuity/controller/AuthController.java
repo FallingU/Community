@@ -40,7 +40,17 @@ public class AuthController {
 
     /**
      * github将用户请求重定向到服务器的callback请求路径下,处理用户登录
-     *
+     * · 用户点击登录按钮，用户被重定向到github的授权身份的url上，并且带有社区的client_id,和获得授权后的回调，和作用域参数和一个状态参数。
+     * · 用户授权后，通过上一次传过去的回调地址，github将用户重定向回服务器的站点中，并带有code参数和state参数
+     * · 服务器通过code参数和state参数再向github发送post请求access_token(访问令牌),需要传入client_id参数，client_secret参数,code参数
+     * · 然后github响应返回用户的access_token,再向github发送请求，在请求头中携带该access_token信息，获取用户信息
+     * · github验证access_token信息并返回user信息
+     *github授权登录后获取到了用户授权的信息
+     * · 将用户授权的信息封装到一个User实体中，User实体中有一个token属性，为User生成一个UUID作为持久化登录的token
+     * · 将用户插入到数据库User表中
+     * · 使用response对象中添加一个cookie为token=刚刚生成的UUID让客户端浏览器存储token信息。
+     * · 重定向到首页
+     * · 此时用户请求头中的cookie中就有token信息，根据token信息查询数据库中user表，如果查询出来的用户不为空则说明是已登录状态，这样就实现了在cookie超时时间内的持久化登录。
      * http://localhost:8080/callback?code=7375be889eafe9d66ae1&state=1
      * @return
      */
@@ -58,7 +68,7 @@ public class AuthController {
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         //根据用户token取github上获取用户信息
         GithubUser githubUser = githubProvider.getUser(accessToken);
-        if(githubUser!=null){
+        if(githubUser!=null&&githubUser.getId()!=null){
             User user = new User();
             user.setAccountId(String.valueOf(githubUser.getId()));
             user.setName(githubUser.getName());
@@ -66,6 +76,7 @@ public class AuthController {
             user.setToken(token);
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
+            user.setAvatarUrl(githubUser.getAvatarUrl());
             userMapper.insertUser(user);
             response.addCookie(new Cookie("token",token));
             return "redirect:/";
