@@ -6,6 +6,7 @@ import life.fallingu.commuity.commuity.dto.GithubUser;
 import life.fallingu.commuity.commuity.mapper.UserMapper;
 import life.fallingu.commuity.commuity.pojo.User;
 import life.fallingu.commuity.commuity.provider.GithubProvider;
+import life.fallingu.commuity.commuity.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -30,7 +31,8 @@ public class AuthController {
     private String clientSecret;
 
     @Autowired
-    UserMapper userMapper;
+    UserService userService;
+
 
 
     @RequestMapping("/login")
@@ -74,15 +76,32 @@ public class AuthController {
             user.setName(githubUser.getName());
             String token = UUID.randomUUID().toString();
             user.setToken(token);
-            user.setGmtCreate(System.currentTimeMillis());
-            user.setGmtModified(user.getGmtCreate());
             user.setAvatarUrl(githubUser.getAvatarUrl());
-            userMapper.insertUser(user);
-            response.addCookie(new Cookie("token",token));
+            userService.insertOrUpdate(user);
+            Cookie cookie = new Cookie("token", token);
+            cookie.setMaxAge(60*60*24*7);
+            response.addCookie(cookie);
             return "redirect:/";
         }else{
             return "redirect:/";
         }
     }
 
+    /**
+     * 退出：
+     * · 用户点击退出登录，服务器端再session中删除user属性，
+     * · response对象通过setcookie给一个空值覆盖原token数据并且生命期为0
+     * @param session
+     * @param response
+     * @return
+     */
+    @RequestMapping("/logout")
+    public String logout(HttpSession session,
+                         HttpServletResponse response){
+        session.removeAttribute("user");
+        Cookie cookie = new Cookie("token",null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return "redirect:/";
+    }
 }

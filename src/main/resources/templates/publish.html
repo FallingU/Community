@@ -18,6 +18,7 @@
             <hr>
 
             <form th:action="@{/publish}" method="post">
+                <input type="hidden" name="id" th:value="${question!=null?question.id:null}">
                 <div class="form-group">
                     <label for="title">帖子标题（简单扼要）:</label>
                     <input type="text" class="form-control" th:value="${question!=null?question.title:null}"  id="title" name="title" placeholder="问题标题……">

@@ -14,6 +14,7 @@ public class SessionInterceptor implements HandlerInterceptor {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if(user==null){
+
             response.sendRedirect("/");
             return false;
         }

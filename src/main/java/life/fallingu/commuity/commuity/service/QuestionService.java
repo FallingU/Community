@@ -43,4 +43,20 @@ public class QuestionService {
         List<QuestionDTO> list = questionMapper.listByUserId(id);
         return new PageInfo<>(list,5);
     }
+
+    public QuestionDTO findById(Integer id) {
+       return questionMapper.findById(id);
+    }
+
+    public void insertOrUpdate(Question question) {
+        if(question.getId()!=null){
+            //更新
+            question.setGmtModified(System.currentTimeMillis());
+            questionMapper.updateById(question);
+        }else{
+            question.setGmtCreate(System.currentTimeMillis());
+            question.setGmtModified(question.getGmtCreate());
+            questionMapper.insert(question);
+        }
+    }
 }

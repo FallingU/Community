@@ -39,9 +39,6 @@ public class ProfileController {
             model.addAttribute("section","replies");
         }
         User user = (User) session.getAttribute("user");
-        if(user==null){
-            return "redirect:/";
-        }
         PageInfo<QuestionDTO> pageInfo =questionService.list(user.getId(),page,size);
         model.addAttribute("pageInfo",pageInfo);
         return "/profile";

@@ -1,10 +1,7 @@
 package life.fallingu.commuity.commuity.mapper;
 
 import life.fallingu.commuity.commuity.pojo.User;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface UserMapper {
@@ -17,4 +14,10 @@ public interface UserMapper {
 
     @Select(value = "select * from user where id = #{id}")
     User findUserById(@Param("id") Integer id);
+
+    @Select(value = "select * from user where account_id = #{accountId}")
+    User findUserByAccountId(@Param("accountId") String accountId);
+
+    @Update(value = "update user set avatar_url=#{avatarUrl},gmt_modified=#{gmtModified},token=#{token},name=#{name} where id = #{id}")
+    void updateById(User user);
 }

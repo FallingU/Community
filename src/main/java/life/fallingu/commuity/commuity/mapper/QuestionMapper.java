@@ -33,4 +33,11 @@ public interface QuestionMapper {
     @Select(value = "select * from question where creator=#{id}")
     @ResultMap(value = "questionDtoModelMap")
     List<QuestionDTO> listByUserId(@Param("id") Integer id);
+
+    @Select(value = "select * from question where id = #{id}")
+    @ResultMap(value = "questionDtoModelMap")
+    QuestionDTO findById(@Param("id") Integer id);
+
+    @Update(value = "update question set title=#{title},description=#{description},gmt_modified=#{gmtModified},tag=#{tag} where id = #{id}")
+    void updateById(Question question);
 }
