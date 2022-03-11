@@ -1,14 +1,12 @@
 package life.fallingu.commuity.commuity.controller;
 
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import life.fallingu.commuity.commuity.dto.QuestionDTO;
 import life.fallingu.commuity.commuity.mapper.UserMapper;
 import life.fallingu.commuity.commuity.pojo.User;
+import life.fallingu.commuity.commuity.pojo.UserExample;
 import life.fallingu.commuity.commuity.service.QuestionService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 public class IndexController {
@@ -44,9 +41,11 @@ public class IndexController {
         if("".equals(token)||token==null||token.length()==0){
 
         }else{
-            User user=userMapper.findUserByToken(token);
-            if(user!=null){
-                session.setAttribute("user",user);
+            UserExample example = new UserExample();
+            example.createCriteria().andTokenEqualTo(token);
+            List<User> users = userMapper.selectByExample(example);
+            if(users.size()!=0){
+                session.setAttribute("user",users.get(0));
             }
         }
         PageInfo<QuestionDTO> pageInfo = questionService.list(page, size);

@@ -3,15 +3,15 @@ package life.fallingu.commuity.commuity.service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import life.fallingu.commuity.commuity.dto.QuestionDTO;
+import life.fallingu.commuity.commuity.exception.CustomizeErrorCode;
+import life.fallingu.commuity.commuity.exception.CustomizeException;
 import life.fallingu.commuity.commuity.mapper.QuestionMapper;
 import life.fallingu.commuity.commuity.mapper.UserMapper;
 import life.fallingu.commuity.commuity.pojo.Question;
-import life.fallingu.commuity.commuity.pojo.User;
-import org.springframework.beans.BeanUtils;
+import life.fallingu.commuity.commuity.pojo.QuestionExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -45,18 +45,36 @@ public class QuestionService {
     }
 
     public QuestionDTO findById(Integer id) {
-       return questionMapper.findById(id);
+       QuestionDTO question = questionMapper.findById(id);
+        return question;
     }
 
     public void insertOrUpdate(Question question) {
         if(question.getId()!=null){
             //更新
-            question.setGmtModified(System.currentTimeMillis());
-            questionMapper.updateById(question);
+            Question updateQuestion = new Question();
+            updateQuestion.setGmtModified(System.currentTimeMillis());
+            updateQuestion.setDescription(question.getDescription());
+            updateQuestion.setTag(question.getTag());
+            updateQuestion.setTitle(question.getTitle());
+            QuestionExample example = new QuestionExample();
+            example.createCriteria().andIdEqualTo(question.getId());
+            questionMapper.updateByExampleSelective(updateQuestion,example);
         }else{
             question.setGmtCreate(System.currentTimeMillis());
             question.setGmtModified(question.getGmtCreate());
-            questionMapper.insert(question);
+            questionMapper.insertSelective(question);
+        }
+    }
+
+    /**
+     * 增加浏览数
+     * @param id
+     */
+    public void incr(Integer id) {
+        int res = questionMapper.incrById(id);
+        if(res==0){
+            throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
         }
     }
 }

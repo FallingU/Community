@@ -1,16 +1,13 @@
 package life.fallingu.commuity.commuity.controller;
 
-import com.sun.deploy.net.HttpResponse;
 import life.fallingu.commuity.commuity.dto.AccessTokenDTO;
 import life.fallingu.commuity.commuity.dto.GithubUser;
-import life.fallingu.commuity.commuity.mapper.UserMapper;
 import life.fallingu.commuity.commuity.pojo.User;
 import life.fallingu.commuity.commuity.provider.GithubProvider;
 import life.fallingu.commuity.commuity.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 

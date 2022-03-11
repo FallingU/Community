@@ -1,6 +1,8 @@
 package life.fallingu.commuity.commuity.controller;
 
 import life.fallingu.commuity.commuity.dto.QuestionDTO;
+import life.fallingu.commuity.commuity.exception.CustomizeErrorCode;
+import life.fallingu.commuity.commuity.exception.CustomizeException;
 import life.fallingu.commuity.commuity.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +18,7 @@ public class QuestionController {
     @GetMapping("/question/{id}")
     public String question(@PathVariable("id")Integer id,
                            Model model){
+        questionService.incr(id);
         QuestionDTO question = questionService.findById(id);
         model.addAttribute("question",question);
         return "question";
