@@ -3,7 +3,7 @@ body{
 }
 .main{
     background-color:white;
-    margin:30px;
+    margin:60px;
 }
 .btn-publish{
     float: right;
@@ -17,4 +17,7 @@ body{
     font-size:12px;
     font-weight: normal;
     color: #999;
+}
+.profile.section{
+    margin-top:15px;
 }
