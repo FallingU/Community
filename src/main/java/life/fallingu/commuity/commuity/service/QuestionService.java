@@ -38,13 +38,13 @@ public class QuestionService {
        return pageInfo;
     }
 
-    public PageInfo<QuestionDTO> list(Integer id, Integer page, Integer size) {
+    public PageInfo<QuestionDTO> list(Long id, Integer page, Integer size) {
         PageHelper.startPage(page,size);
         List<QuestionDTO> list = questionMapper.listByUserId(id);
         return new PageInfo<>(list,5);
     }
 
-    public QuestionDTO findById(Integer id) {
+    public QuestionDTO findById(Long id) {
        QuestionDTO question = questionMapper.findById(id);
         return question;
     }
@@ -71,7 +71,7 @@ public class QuestionService {
      * 增加浏览数
      * @param id
      */
-    public void incr(Integer id) {
+    public void incr(Long id) {
         int res = questionMapper.incrById(id);
         if(res==0){
             throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
