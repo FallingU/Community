@@ -1,8 +1,10 @@
 package life.fallingu.commuity.commuity.controller;
 
 import com.github.pagehelper.PageInfo;
+import life.fallingu.commuity.commuity.dto.NotificationDTO;
 import life.fallingu.commuity.commuity.dto.QuestionDTO;
 import life.fallingu.commuity.commuity.pojo.User;
+import life.fallingu.commuity.commuity.service.NotificationService;
 import life.fallingu.commuity.commuity.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,8 @@ public class ProfileController {
 
     @Autowired
     QuestionService questionService;
+    @Autowired
+    NotificationService notificationService;
     /**
      * 用户查看自己发布的问题
      * @param action
@@ -31,16 +35,18 @@ public class ProfileController {
                            HttpSession session,
                            @RequestParam(value = "page",defaultValue = "1") Integer page,
                            @RequestParam(value = "size",defaultValue = "8")Integer size){
+        User user = (User) session.getAttribute("user");
         if("questions".equals(action)){
             model.addAttribute("sectionName","我的问题");
             model.addAttribute("section","questions");
+            PageInfo<QuestionDTO> pageInfo =questionService.list(user.getId(),page,size);
+            model.addAttribute("pageInfo",pageInfo);
         }else if("replies".equals(action)){
             model.addAttribute("sectionName","最新回复");
             model.addAttribute("section","replies");
+            PageInfo<NotificationDTO> pageInfo = notificationService.list(user.getId(),page,size);
+            model.addAttribute("pageInfo",pageInfo);
         }
-        User user = (User) session.getAttribute("user");
-        PageInfo<QuestionDTO> pageInfo =questionService.list(user.getId(),page,size);
-        model.addAttribute("pageInfo",pageInfo);
         return "/profile";
     }
 }

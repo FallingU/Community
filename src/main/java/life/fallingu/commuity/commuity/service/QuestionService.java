@@ -11,10 +11,13 @@ import life.fallingu.commuity.commuity.pojo.Question;
 import life.fallingu.commuity.commuity.pojo.QuestionExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class QuestionService {
     @Autowired
     UserMapper userMapper;
@@ -22,9 +25,13 @@ public class QuestionService {
     QuestionMapper questionMapper;
 
     //分页查询
-    public PageInfo<QuestionDTO> list(Integer page, Integer size) {
+    public PageInfo<QuestionDTO> list(String search,Integer page, Integer size) {
         PageHelper.startPage(page,size);
-       List<QuestionDTO> list =  questionMapper.list();
+        if(search!=null&&"".equals(search)) {
+            String str = search.trim().replaceAll(" ", "|");
+            search = str;
+        }
+        List<QuestionDTO> list =  questionMapper.listBySearch(search);
 //       System.out.println(list.size());
 //       List<QuestionDTO> res = new ArrayList<>();
 //       for(Question question : list){
@@ -76,5 +83,19 @@ public class QuestionService {
         if(res==0){
             throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
         }
+    }
+
+    /**
+     * 获取相关问题
+     * @param question
+     * @return
+     */
+    public List<QuestionDTO> getRelateList(QuestionDTO question) {
+        String tags = question.getTag();
+        String replace = StringUtils.replace(tags, ",", "|");
+        Question ques  = new Question();
+        ques.setId(question.getId());
+        ques.setTag(replace);
+        return questionMapper.getRelateList(ques);
     }
 }

@@ -1,9 +1,12 @@
 package life.fallingu.commuity.commuity.controller;
 
+import life.fallingu.commuity.commuity.cache.TagCache;
 import life.fallingu.commuity.commuity.dto.QuestionDTO;
+import life.fallingu.commuity.commuity.dto.TagDTO;
 import life.fallingu.commuity.commuity.pojo.Question;
 import life.fallingu.commuity.commuity.pojo.User;
 import life.fallingu.commuity.commuity.service.QuestionService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 public class PublishController {
@@ -20,13 +24,15 @@ public class PublishController {
     QuestionService questionService;
 
     @GetMapping("/publish")
-    public String publish(){
+    public String publish(Model model){
         return "publish";
     }
 
     @GetMapping("/publish/{id}")
     public String edit(@PathVariable("id")Long id,
                        Model model){
+        List<TagDTO> tagDTOS = TagCache.get();
+        model.addAttribute("tags",tagDTOS);
         QuestionDTO question = questionService.findById(id);
         model.addAttribute("question",question);
         return "publish";
@@ -50,6 +56,8 @@ public class PublishController {
                             HttpSession session,
                             Model model){
         User user = (User) session.getAttribute("user");
+        List<TagDTO> tagDTOS = TagCache.get();
+        model.addAttribute("tags",tagDTOS);
         model.addAttribute("question",question);
         if(question.getTitle()==null||"".equals(question.getTitle())){
             model.addAttribute("error","标题不能为空");
@@ -62,6 +70,11 @@ public class PublishController {
         }
         if(question.getTag()==null||"".equals(question.getTag())){
             model.addAttribute("error","标签不能为空");
+            return "/publish";
+        }
+        String s = TagCache.filterInvalid(question.getTag());
+        if(StringUtils.isNotBlank(s)){
+            model.addAttribute("error","标签不合法："+s);
             return "/publish";
         }
         question.setCreator(user.getId());

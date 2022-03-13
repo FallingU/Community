@@ -7,6 +7,8 @@ import life.fallingu.commuity.commuity.pojo.Question;
 import life.fallingu.commuity.commuity.pojo.QuestionExample;
 import org.apache.ibatis.annotations.*;
 
+import javax.annotation.security.PermitAll;
+
 @Mapper
 public interface QuestionMapper {
     /**
@@ -121,7 +123,7 @@ public interface QuestionMapper {
      */
     int updateByPrimaryKey(Question record);
 
-    @Select(value = "select * from question")
+    @Select(value ="<script>"+"select * from question"+"<where> <if test='search!=null'>title regexp #{search}</if></where>"+"order by gmt_create desc"+"</script>")
     @Results(id = "questionDtoModelMap",value = {
             @Result(column = "id",property = "id"),
             @Result(column = "title",property = "title"),
@@ -137,9 +139,9 @@ public interface QuestionMapper {
                     column = "creator",
                     one=@One(select = "life.fallingu.commuity.commuity.mapper.UserMapper.selectByPrimaryKey"))
     })
-    List<QuestionDTO> list();
+    List<QuestionDTO> listBySearch(@Param("search") String str);
 
-    @Select(value = "select * from question where creator=#{id}")
+    @Select(value = "select * from question where creator=#{id} order by gmt_create desc")
     @ResultMap(value = "questionDtoModelMap")
     List<QuestionDTO> listByUserId(@Param("id") Long id);
 
@@ -149,4 +151,10 @@ public interface QuestionMapper {
 
     @Update(value = "update question set view_count = view_count +1 where id=#{id}")
     int incrById(@Param("id") Long id);
+
+    @Update(value = "update question set comment_count = comment_count +1 where id=#{id}")
+    int incrCommentById(@Param("id") Long id);
+
+    @Select(value = "select id,title,tag from question where id!=#{id} and tag regexp #{tag}")
+    List<QuestionDTO> getRelateList(Question ques);
 }

@@ -11,6 +11,10 @@ public class CustomizeException extends RuntimeException{
         return customizeErrorCode.getMessage();
     }
 
+    public ICustomizeErrorCode getCustomizeErrorCode() {
+        return customizeErrorCode;
+    }
+
     public Integer getCode(){
         return customizeErrorCode.getCode();
     }

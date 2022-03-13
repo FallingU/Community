@@ -5,10 +5,12 @@ import life.fallingu.commuity.commuity.pojo.User;
 import life.fallingu.commuity.commuity.pojo.UserExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class UserService {
     @Autowired
     UserMapper userMapper;
@@ -21,7 +23,7 @@ public class UserService {
         UserExample example = new UserExample();
         example.createCriteria().andAccountIdEqualTo(user.getAccountId());
         List<User> users = userMapper.selectByExample(example);
-       if(users.size()!=0){
+       if(users.size()==0){
            user.setGmtCreate(System.currentTimeMillis());
            user.setGmtModified(user.getGmtCreate());
            userMapper.insertSelective(user);
